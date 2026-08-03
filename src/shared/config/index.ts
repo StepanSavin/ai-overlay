@@ -1,1 +1,1 @@
-export { TOGGLE_HOTKEY_LABEL } from "./hotkey";
+export { TOGGLE_HOTKEY_LABEL } from './hotkey';

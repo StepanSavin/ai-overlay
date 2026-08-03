@@ -1,1 +1,1 @@
-export {default as OverlayPage} from './overlay-page.vue'
+export { default as OverlayPage } from './overlay-page.vue';

@@ -1,1 +1,1 @@
-export { useHideOnEscape } from "./model/use-hide-on-escape";
+export { useHideOnEscape } from './model/use-hide-on-escape';

@@ -1,0 +1,8 @@
+node_modules
+dist
+yarn.lock
+
+# Rust build output and Tauri-generated schemas
+src-tauri/target
+src-tauri/gen
+src-tauri/Cargo.lock

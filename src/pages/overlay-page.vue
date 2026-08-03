@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { useHideOnEscape } from "@/features/overlay-visibility";
-import { TOGGLE_HOTKEY_LABEL } from "@/shared/config";
-import { UiKbd } from "@/shared/ui/kbd";
-import { OverlayPanel } from "@/widgets/overlay-panel";
+import { useHideOnEscape } from '@/features/overlay-visibility';
+import { TOGGLE_HOTKEY_LABEL } from '@/shared/config';
+import { UiKbd } from '@/shared/ui/kbd';
 
 useHideOnEscape();
 </script>
 
 <template>
   <main class="overlay-page">
-    <OverlayPanel>
+    <section class="overlay-panel">
       <h1 class="overlay-page__title">AI Overlay</h1>
       <p class="overlay-page__hint">
         <UiKbd>{{ TOGGLE_HOTKEY_LABEL }}</UiKbd>
@@ -17,7 +16,7 @@ useHideOnEscape();
         <UiKbd>Esc</UiKbd>
         — скрыть
       </p>
-    </OverlayPanel>
+    </section>
   </main>
 </template>
 
@@ -41,5 +40,18 @@ useHideOnEscape();
   margin: 0;
   color: var(--overlay-text-muted);
   font-size: 13px;
+}
+
+.overlay-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--overlay-gap);
+  padding: 22px 26px;
+  border: 1px solid var(--overlay-border);
+  border-radius: var(--overlay-radius);
+  background: var(--overlay-surface);
+  /* Native window shadow is off (it clips on transparent windows), so draw our own. */
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(24px);
 }
 </style>

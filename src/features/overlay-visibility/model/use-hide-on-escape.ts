@@ -1,15 +1,15 @@
-import { onBeforeUnmount, onMounted } from "vue";
+import { onBeforeUnmount, onMounted } from 'vue';
 
-import { hideOverlayWindow } from "@/shared/lib/tauri";
+import { hideOverlayWindow } from '@/shared/lib/tauri';
 
-export function useHideOnEscape(): void {
-  function handleKeydown(event: KeyboardEvent): void {
-    if (event.key !== "Escape" || event.defaultPrevented) return;
+export const useHideOnEscape = () => {
+  const handleKeydown = (event: KeyboardEvent) => {
+    if (event.key !== 'Escape' || event.defaultPrevented) return;
 
     event.preventDefault();
     void hideOverlayWindow();
-  }
+  };
 
-  onMounted(() => window.addEventListener("keydown", handleKeydown));
-  onBeforeUnmount(() => window.removeEventListener("keydown", handleKeydown));
-}
+  onMounted(() => window.addEventListener('keydown', handleKeydown));
+  onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown));
+};

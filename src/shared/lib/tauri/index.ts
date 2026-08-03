@@ -1,1 +1,1 @@
-export { isTauri, hideOverlayWindow } from "./overlay-window";
+export { isTauri, hideOverlayWindow } from './overlay-window';

@@ -1,1 +1,1 @@
-export { default as UiKbd } from "./ui-kbd.vue";
+export { default as UiKbd } from './ui-kbd.vue';
