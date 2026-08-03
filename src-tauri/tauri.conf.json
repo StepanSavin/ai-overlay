@@ -12,11 +12,23 @@
   "app": {
     "windows": [
       {
-        "title": "ai-overlay",
-        "width": 800,
-        "height": 600
+        "label": "main",
+        "title": "AI Overlay",
+        "width": 560,
+        "height": 160,
+        "resizable": false,
+        "decorations": false,
+        "transparent": true,
+        "shadow": false,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "visible": false,
+        "center": true,
+        "focus": false,
+        "acceptFirstMouse": true
       }
     ],
+    "macOSPrivateApi": true,
     "security": {
       "csp": null
     }
