@@ -28,7 +28,6 @@ body,
 
 body {
   margin: 0;
-  /* The native window is transparent — anything opaque must be drawn by the panel itself. */
   background: transparent;
   color: var(--overlay-text);
   overflow: hidden;

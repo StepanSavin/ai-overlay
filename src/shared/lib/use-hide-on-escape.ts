@@ -1,6 +1,6 @@
 import { onBeforeUnmount, onMounted } from 'vue';
 
-import { hideOverlayWindow } from '@/shared/lib/tauri';
+import { hideOverlayWindow } from './overlay-window';
 
 export const useHideOnEscape = () => {
   const handleKeydown = (event: KeyboardEvent) => {
