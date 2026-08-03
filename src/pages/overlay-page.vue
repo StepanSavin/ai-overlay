@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useHideOnEscape } from '@/features/overlay-visibility';
-import { TOGGLE_HOTKEY_LABEL } from '@/shared/config';
-import { UiKbd } from '@/shared/ui/kbd';
+import { TOGGLE_HOTKEY_LABEL } from '@/shared/constants';
+import { useHideOnEscape } from '@/shared/lib';
+import { UiKbd } from '@/shared/ui';
 
 useHideOnEscape();
 </script>
