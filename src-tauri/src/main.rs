@@ -1,5 +1,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use tauri::image::Image;
+use tauri::menu::{Menu, MenuItem};
+use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::{Manager, WebviewWindow, WindowEvent};
 use tauri_plugin_global_shortcut::{Code, Modifiers, Shortcut, ShortcutState};
 
@@ -48,6 +51,45 @@ fn main() {
             if let Some(window) = app.get_webview_window(OVERLAY_WINDOW) {
                 let _ = window.set_visible_on_all_workspaces(true);
             }
+
+            let show = MenuItem::with_id(
+                app,
+                "show",
+                "Показать оверлей",
+                true,
+                Some("Cmd+Shift+Space"),
+            )?;
+            let quit = MenuItem::with_id(app, "quit", "Выйти", true, None::<&str>)?;
+            let menu = Menu::with_items(app, &[&show, &quit])?;
+
+            TrayIconBuilder::new()
+                .icon(Image::from_bytes(include_bytes!("../icons/tray.png"))?)
+                .icon_as_template(true)
+                .tooltip("AI Overlay")
+                .menu(&menu)
+                .show_menu_on_left_click(false)
+                .on_menu_event(|app, event| match event.id.as_ref() {
+                    "show" => {
+                        if let Some(window) = app.get_webview_window(OVERLAY_WINDOW) {
+                            show_overlay(&window);
+                        }
+                    }
+                    "quit" => app.exit(0),
+                    _ => {}
+                })
+                .on_tray_icon_event(|tray, event| {
+                    if let TrayIconEvent::Click {
+                        button: MouseButton::Left,
+                        button_state: MouseButtonState::Up,
+                        ..
+                    } = event
+                    {
+                        if let Some(window) = tray.app_handle().get_webview_window(OVERLAY_WINDOW) {
+                            toggle_overlay(&window);
+                        }
+                    }
+                })
+                .build(app)?;
 
             Ok(())
         })
