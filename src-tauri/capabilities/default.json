@@ -3,11 +3,5 @@
   "identifier": "default",
   "description": "Capability for the overlay window",
   "windows": ["main"],
-  "permissions": [
-    "core:default",
-    "core:window:allow-hide",
-    "core:window:allow-show",
-    "core:window:allow-set-focus",
-    "opener:default"
-  ]
+  "permissions": ["core:default"]
 }

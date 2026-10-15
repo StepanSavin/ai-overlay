@@ -7,6 +7,7 @@
   --overlay-text: #f4f4f5;
   --overlay-text-muted: #a1a1aa;
   --overlay-gap: 12px;
+  --overlay-accent: #22c55e;
 
   font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
   font-size: 15px;

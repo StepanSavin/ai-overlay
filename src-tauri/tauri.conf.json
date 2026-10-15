@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "AI Overlay",
+  "productName": "Auto Clicker",
   "version": "0.1.0",
-  "identifier": "com.savin.ai-overlay",
+  "identifier": "com.savin.auto-clicker",
   "build": {
     "beforeDevCommand": "yarn dev",
     "devUrl": "http://localhost:1420",
@@ -13,9 +13,9 @@
     "windows": [
       {
         "label": "main",
-        "title": "AI Overlay",
-        "width": 560,
-        "height": 420,
+        "title": "Auto Clicker",
+        "width": 300,
+        "height": 44,
         "resizable": false,
         "decorations": false,
         "transparent": true,
@@ -23,9 +23,8 @@
         "alwaysOnTop": true,
         "skipTaskbar": true,
         "visible": false,
-        "center": true,
         "focus": false,
-        "acceptFirstMouse": true
+        "focusable": false
       }
     ],
     "macOSPrivateApi": true,
@@ -35,7 +34,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": ["nsis"],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",

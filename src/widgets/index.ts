@@ -1,1 +1,1 @@
-export { default as Chat } from './chat.vue';
+export { default as ClickerStatus } from './clicker-status.vue';

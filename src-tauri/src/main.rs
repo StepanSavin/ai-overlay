@@ -1,107 +1,90 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod clicker;
+
 use tauri::image::Image;
 use tauri::menu::{Menu, MenuItem};
-use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
-use tauri::{Manager, WebviewWindow, WindowEvent};
+use tauri::tray::TrayIconBuilder;
+use tauri::{AppHandle, Emitter, Manager, PhysicalPosition, State, WebviewWindow};
 use tauri_plugin_global_shortcut::{Code, Modifiers, Shortcut, ShortcutState};
+
+use clicker::Clicker;
 
 const OVERLAY_WINDOW: &str = "main";
 
-const HIDE_ON_BLUR: bool = !cfg!(debug_assertions);
+const CLICKER_EVENT: &str = "clicker-state";
 
-fn show_overlay(window: &WebviewWindow) {
-    let _ = window.center();
-    let _ = window.show();
-    let _ = window.set_focus();
+const OVERLAY_TOP_OFFSET: f64 = 16.0;
+
+#[tauri::command]
+fn clicker_state(clicker: State<Clicker>) -> bool {
+    clicker.is_active()
 }
 
-fn toggle_overlay(window: &WebviewWindow) {
-    if window.is_visible().unwrap_or(false) {
-        let _ = window.hide();
-    } else {
-        show_overlay(window);
-    }
+fn toggle_clicker(app: &AppHandle) {
+    let active = app.state::<Clicker>().toggle();
+    let _ = app.emit(CLICKER_EVENT, active);
+}
+
+fn place_overlay(window: &WebviewWindow) {
+    let Ok(Some(monitor)) = window.primary_monitor() else {
+        return;
+    };
+    let Ok(size) = window.outer_size() else {
+        return;
+    };
+
+    let area = monitor.work_area();
+    let x = area.position.x + (area.size.width as i32 - size.width as i32) / 2;
+    let y = area.position.y + (OVERLAY_TOP_OFFSET * monitor.scale_factor()) as i32;
+
+    let _ = window.set_position(PhysicalPosition::new(x, y));
 }
 
 fn main() {
-    let toggle_shortcut = Shortcut::new(Some(Modifiers::SUPER | Modifiers::SHIFT), Code::Space);
+    let toggle_shortcut = Shortcut::new(Some(Modifiers::CONTROL | Modifiers::SHIFT), Code::F6);
 
     tauri::Builder::default()
-        .plugin(tauri_plugin_opener::init())
+        .manage(Clicker::spawn())
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()
                 .with_shortcut(toggle_shortcut)
-                .expect("failed to parse the overlay shortcut")
+                .expect("failed to parse the clicker shortcut")
                 .with_handler(move |app, shortcut, event| {
-                    if shortcut != &toggle_shortcut || event.state() != ShortcutState::Pressed {
-                        return;
-                    }
-
-                    if let Some(window) = app.get_webview_window(OVERLAY_WINDOW) {
-                        toggle_overlay(&window);
+                    if shortcut == &toggle_shortcut && event.state() == ShortcutState::Pressed {
+                        toggle_clicker(app);
                     }
                 })
                 .build(),
         )
+        .invoke_handler(tauri::generate_handler![clicker_state])
         .setup(|app| {
             #[cfg(target_os = "macos")]
             app.set_activation_policy(tauri::ActivationPolicy::Accessory);
 
             if let Some(window) = app.get_webview_window(OVERLAY_WINDOW) {
                 let _ = window.set_visible_on_all_workspaces(true);
+                let _ = window.set_ignore_cursor_events(true);
+                place_overlay(&window);
+                let _ = window.show();
             }
 
-            let show = MenuItem::with_id(
-                app,
-                "show",
-                "Показать оверлей",
-                true,
-                Some("Cmd+Shift+Space"),
-            )?;
             let quit = MenuItem::with_id(app, "quit", "Выйти", true, None::<&str>)?;
-            let menu = Menu::with_items(app, &[&show, &quit])?;
+            let menu = Menu::with_items(app, &[&quit])?;
 
             TrayIconBuilder::new()
                 .icon(Image::from_bytes(include_bytes!("../icons/tray.png"))?)
                 .icon_as_template(true)
-                .tooltip("AI Overlay")
+                .tooltip("Auto Clicker — Ctrl+Shift+F6")
                 .menu(&menu)
-                .show_menu_on_left_click(false)
-                .on_menu_event(|app, event| match event.id.as_ref() {
-                    "show" => {
-                        if let Some(window) = app.get_webview_window(OVERLAY_WINDOW) {
-                            show_overlay(&window);
-                        }
-                    }
-                    "quit" => app.exit(0),
-                    _ => {}
-                })
-                .on_tray_icon_event(|tray, event| {
-                    if let TrayIconEvent::Click {
-                        button: MouseButton::Left,
-                        button_state: MouseButtonState::Up,
-                        ..
-                    } = event
-                    {
-                        if let Some(window) = tray.app_handle().get_webview_window(OVERLAY_WINDOW) {
-                            toggle_overlay(&window);
-                        }
+                .on_menu_event(|app, event| {
+                    if event.id.as_ref() == "quit" {
+                        app.exit(0);
                     }
                 })
                 .build(app)?;
 
             Ok(())
-        })
-        .on_window_event(|window, event| match event {
-            WindowEvent::Focused(false) if HIDE_ON_BLUR => {
-                let _ = window.hide();
-            }
-            WindowEvent::CloseRequested { api, .. } => {
-                api.prevent_close();
-                let _ = window.hide();
-            }
-            _ => {}
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
