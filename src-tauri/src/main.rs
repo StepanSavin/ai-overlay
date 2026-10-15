@@ -42,7 +42,10 @@ fn place_overlay(window: &WebviewWindow) {
 }
 
 fn main() {
-    let toggle_shortcut = Shortcut::new(Some(Modifiers::CONTROL | Modifiers::SHIFT), Code::F6);
+    let toggle_shortcut = Shortcut::new(
+        Some(Modifiers::CONTROL | Modifiers::ALT | Modifiers::SHIFT),
+        Code::KeyQ,
+    );
 
     tauri::Builder::default()
         .manage(Clicker::spawn())
@@ -75,7 +78,7 @@ fn main() {
             TrayIconBuilder::new()
                 .icon(Image::from_bytes(include_bytes!("../icons/tray.png"))?)
                 .icon_as_template(true)
-                .tooltip("Auto Clicker — Ctrl+Shift+F6")
+                .tooltip("Auto Clicker — Ctrl+Alt+Shift+Q")
                 .menu(&menu)
                 .on_menu_event(|app, event| {
                     if event.id.as_ref() == "quit" {

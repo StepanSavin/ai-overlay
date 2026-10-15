@@ -1,1 +1,1 @@
-export const CLICKER_HOTKEY = ['Ctrl', 'Shift', 'F6'];
+export const CLICKER_HOTKEY = ['Ctrl', 'Alt', 'Shift', 'Q'];
